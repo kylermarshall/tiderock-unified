@@ -1,0 +1,30 @@
+export const COMPANY = {
+  name: 'Premier LogiTech',
+  tagline: 'Reduce cost leakage. Fix inefficiencies. Improve operational visibility.',
+  industry: 'Technology Lifecycle & Supply Chain Solutions',
+  website: 'premierss.com',
+  positioning:
+    'Premier LogiTech helps businesses reduce logistics cost leakage, fix inefficient reverse logistics systems, and improve supply chain visibility.',
+  coreThemes: [
+    'Hidden logistics cost leaks',
+    'Returns inefficiency',
+    'Warehouse bottlenecks',
+    'Freight mistakes',
+    'Damaged goods',
+    'Inventory confusion',
+    'Lack of visibility',
+    'Scaling problems',
+    'Process failure',
+    'Margin leakage',
+  ],
+  bannedWords: [
+    'innovative',
+    'quality',
+    'solutions',
+    'seamless',
+    'world-class',
+    'cutting-edge',
+    'game-changing',
+    'best-in-class',
+  ],
+}
