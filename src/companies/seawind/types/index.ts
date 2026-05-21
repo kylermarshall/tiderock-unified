@@ -53,7 +53,7 @@ export interface LinkedInPostIdea {
 }
 
 export interface LinkedInPost {
-  hook: string
+  hook: string[]
   body: string[]
   businessImpact: string
   cta: string

@@ -264,7 +264,7 @@ const CAPTIONS: Record<string, string[]> = {
   ],
 }
 
-const STORY_SEQUENCES: Record<string, string[]> = {
+const STORY_SEQUENCES: Record<string, string> = {
   'manufacturing-bottlenecks': "Frame 1: 'Your PCB program is behind schedule.' → Frame 2: 'The bottleneck isn't on the assembly floor.' → Frame 3: 'It's in the design handoff. In component kitting. In inter-vendor coordination.' → Frame 4: [Cost stat] → Frame 5: 'The fix: one EMS partner. One timeline. One point of accountability.' → Frame 6: CTA: 'Swipe up to map your bottleneck surfaces.'",
   'supplier-inconsistency': "Frame 1: 'The component arrived at kitting.' → Frame 2: 'It wasn't the approved part.' → Frame 3: 'Production holds. Sourcing scrambles.' → Frame 4: [Stat: 3x more holds with 4+ distributors] → Frame 5: 'Pre-qualified alternates prevent this. Every time.' → Frame 6: CTA: 'Swipe up for the approved alternate qualification process.'",
   'qa-failures': "Frame 1: 'QA failure caught in inspection: rework cycle.' → Frame 2: 'Same failure in the field: recall.' → Frame 3: '6–10x higher correction cost post-assembly.' → Frame 4: 'BGA and QFN: invisible without X-ray.' → Frame 5: 'SPI + AOI + X-ray: the inspection architecture that prevents field returns.' → Frame 6: CTA: 'Swipe up for the inspection stage checklist.'",

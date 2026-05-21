@@ -147,11 +147,6 @@ const OPENING_LINES: Record<string, string[]> = {
     "The most expensive shortage event is not the spot market premium. It's the design respin — six to fourteen weeks, new validation, a market window that may be gone.",
     "Component risk strategy is a design-phase decision. By the time production is scheduled, the decisions that determine shortage exposure are already made.",
   ],
-  'qa-failures': [
-    "In-process inspection is not a quality check. It's a cost control mechanism — preventing the 6–10x cost multiplier that applies when defects reach the field.",
-    "The field return rate in your electronics program is determined by the inspection architecture — not by the assembly team's skill level.",
-    "IPC acceptance criteria is the standard your production will be measured against. Most programs don't define it explicitly before the first board goes down the line.",
-  ],
   'compliance-risk': [
     "Compliance in regulated electronics manufacturing is not a checklist. It's the mechanism that determines whether a product can legally ship — and whether the company that built it faces liability.",
     "The compliance gap in an EMS program is almost never discovered during an audit. It's discovered during a program failure — a hold, a violation, or a customer dispute.",
