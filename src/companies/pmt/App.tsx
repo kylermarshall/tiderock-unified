@@ -1,134 +1,186 @@
-import { useState } from 'react'
-import type { Platform, GeneratedOutput, PlatformInputs, RegenerateVariant } from './types'
-import { InputPanel } from './components/InputPanel'
-import { OutputPanel } from './components/OutputPanel'
-import { PlatformSelector } from './components/PlatformSelector'
+import { useState, useCallback } from 'react'
+import type { Platform, PlatformInputs, GeneratedOutput, LinkedInInputs, YouTubeInputs, TwitterInputs, InstagramInputs, FacebookInputs } from '../../shared/types'
+import { PlatformSelector } from '../../shared/components/PlatformSelector'
+import { InputPanel } from '../../shared/components/InputPanel'
+import { OutputPanel } from '../../shared/components/OutputPanel'
 import { generateLinkedIn } from './platforms/linkedin'
 import { generateYouTube } from './platforms/youtube'
 import { generateTwitter } from './platforms/twitter'
 import { generateInstagram } from './platforms/instagram'
 import { generateFacebook } from './platforms/facebook'
-import { transformToPlatform, applyRegenerateVariant } from './lib/contentTransformer'
+import { applyRegenerateVariant, transformToPlatform } from './lib/contentTransformer'
+import { COMPANY, PROBLEM_LABELS, TARGET_AUDIENCES, CONTENT_ANGLES, OBJECTIVES } from './lib/companyProfile'
 
-const DEFAULT_INPUTS: PlatformInputs = {
-  targetAudience: 'Operations Directors',
-  problem: 'injection-molding-defects',
-  angle: 'Process parameter drift is the root cause most plants ignore',
-  tone: 'direct',
-  objective: 'Drive awareness of PMT process engineering support',
-  contentFormat: 'post',
-} as PlatformInputs
+const BRAND_COLOR = '#8B5CF6'
 
-function getDefaultInputs(platform: Platform, base: PlatformInputs): PlatformInputs {
-  const shared = {
-    targetAudience: base.targetAudience,
-    problem: base.problem,
-    angle: base.angle,
-    tone: base.tone,
-    objective: base.objective,
-  }
-  switch (platform) {
-    case 'linkedin': return { ...shared, contentFormat: 'post' } as PlatformInputs
-    case 'youtube': return { ...shared, videoFormat: '60-90s' } as PlatformInputs
-    case 'twitter': return { ...shared, postFormat: 'thread' } as PlatformInputs
-    case 'instagram': return { ...shared, contentFormat: 'reel', visualStyle: 'Industrial' } as PlatformInputs
-    case 'facebook': return { ...shared, contentFormat: 'educational' } as PlatformInputs
-  }
+const DEFAULT_INPUTS: Record<Platform, PlatformInputs> = {
+  linkedin: {
+    targetAudience: 'Engineering Managers',
+    problem: 'injection-molding-defects',
+    angle: 'Financial Impact',
+    tone: 'professional',
+    objective: 'Build Authority',
+    contentFormat: 'post',
+  } as LinkedInInputs,
+  youtube: {
+    targetAudience: 'Operations Directors',
+    problem: 'tooling-failures',
+    angle: 'Operational Risk',
+    tone: 'direct',
+    objective: 'Drive Website Traffic',
+    videoFormat: '60-90s',
+  } as YouTubeInputs,
+  twitter: {
+    targetAudience: 'Engineering Managers',
+    problem: 'scrap-rework-cost',
+    angle: 'Contrarian Take',
+    tone: 'contrarian',
+    objective: 'Start Conversations',
+    postFormat: 'thread',
+  } as TwitterInputs,
+  instagram: {
+    targetAudience: 'Plant Managers',
+    problem: 'production-bottlenecks',
+    angle: 'Hidden Cost Exposure',
+    tone: 'direct',
+    objective: 'Build Authority',
+    contentFormat: 'carousel',
+    visualStyle: 'Industrial',
+  } as InstagramInputs,
+  facebook: {
+    targetAudience: 'VPs of Manufacturing',
+    problem: 'process-cost-leakage',
+    angle: 'Industry Benchmark',
+    tone: 'educational',
+    objective: 'Educate Audience',
+    contentFormat: 'educational',
+  } as FacebookInputs,
 }
 
-function generateForPlatform(platform: Platform, inputs: PlatformInputs, seed: number): GeneratedOutput {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function generate(platform: Platform, inputs: PlatformInputs, seed = 0): GeneratedOutput {
   switch (platform) {
-    case 'linkedin': return generateLinkedIn(inputs as Parameters<typeof generateLinkedIn>[0], seed)
-    case 'youtube': return generateYouTube(inputs as Parameters<typeof generateYouTube>[0], seed)
-    case 'twitter': return generateTwitter(inputs as Parameters<typeof generateTwitter>[0], seed)
-    case 'instagram': return generateInstagram(inputs as Parameters<typeof generateInstagram>[0], seed)
-    case 'facebook': return generateFacebook(inputs as Parameters<typeof generateFacebook>[0], seed)
+    case 'linkedin': return generateLinkedIn(inputs as any, seed) as unknown as GeneratedOutput
+    case 'youtube': return generateYouTube(inputs as any, seed) as unknown as GeneratedOutput
+    case 'twitter': return generateTwitter(inputs as any, seed) as unknown as GeneratedOutput
+    case 'instagram': return generateInstagram(inputs as any, seed) as unknown as GeneratedOutput
+    case 'facebook': return generateFacebook(inputs as any, seed) as unknown as GeneratedOutput
   }
 }
 
 export default function App() {
   const [platform, setPlatform] = useState<Platform>('linkedin')
-  const [inputs, setInputs] = useState<PlatformInputs>(DEFAULT_INPUTS)
+  const [inputs, setInputs] = useState<Record<Platform, PlatformInputs>>(DEFAULT_INPUTS)
   const [output, setOutput] = useState<GeneratedOutput | null>(null)
-  const [seed, setSeed] = useState(0)
+  const [isGenerating, setIsGenerating] = useState(false)
 
-  function handleGenerate() {
-    const result = generateForPlatform(platform, inputs, seed)
-    setOutput(result)
-  }
-
-  function handlePlatformChange(newPlatform: Platform) {
-    setPlatform(newPlatform)
-    const newInputs = getDefaultInputs(newPlatform, inputs)
-    setInputs(newInputs)
+  const handlePlatformChange = useCallback((p: Platform) => {
+    setPlatform(p)
     setOutput(null)
-  }
+  }, [])
 
-  function handleRegenerate(variant: RegenerateVariant) {
-    if (!output) return
-    const newSeed = seed + 1
-    setSeed(newSeed)
-    const result = applyRegenerateVariant(output, variant, inputs)
-    setOutput(result)
-  }
+  const handleGenerate = useCallback(() => {
+    setIsGenerating(true)
+    setTimeout(() => {
+      const result = generate(platform, inputs[platform])
+      setOutput(result)
+      setIsGenerating(false)
+    }, 800)
+  }, [platform, inputs])
 
-  function handleConvert(targetPlatform: Platform) {
+  const handleInputChange = useCallback((newInputs: PlatformInputs) => {
+    setInputs(prev => ({ ...prev, [platform]: newInputs }))
+  }, [platform])
+
+  const handleRegenerate = useCallback((variant: 'direct' | 'executive' | 'contrarian' | 'shorter' | 'specific') => {
     if (!output) return
-    const result = transformToPlatform(platform, targetPlatform, output, inputs)
-    const newInputs = getDefaultInputs(targetPlatform, inputs)
-    setPlatform(targetPlatform)
-    setInputs(newInputs)
-    setOutput(result)
-  }
+    setIsGenerating(true)
+    setTimeout(() => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const result = applyRegenerateVariant(output as any, variant, inputs[platform] as any) as unknown as GeneratedOutput
+      setOutput(result)
+      setIsGenerating(false)
+    }, 600)
+  }, [output, inputs, platform])
+
+  const handleTransform = useCallback((targetPlatform: Platform) => {
+    if (!output) return
+    setIsGenerating(true)
+    setTimeout(() => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const result = transformToPlatform(platform, targetPlatform, output as any, inputs[platform] as any) as unknown as GeneratedOutput
+      setPlatform(targetPlatform)
+      setOutput(result)
+      setIsGenerating(false)
+    }, 800)
+  }, [output, platform, inputs])
 
   return (
-    <div className="flex flex-col h-screen bg-pmt-dark text-white overflow-hidden">
+    <div className="min-h-screen bg-slate-50">
       {/* Header */}
-      <header className="flex-shrink-0 border-b border-pmt-steel/30 bg-pmt-charcoal/80 backdrop-blur-sm">
-        <div className="flex items-center justify-between px-6 py-3.5">
-          <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-lg bg-pmt-blue flex items-center justify-center">
-              <span className="text-xs font-bold text-white tracking-tight">PMT</span>
-            </div>
-            <div>
-              <div className="text-sm font-bold text-white tracking-wide">PMT Content Engine</div>
-              <div className="text-[10px] text-slate-500 leading-none">Plastic Molding Technology — plasticmolding.com</div>
+      <header className="bg-[#1B2A4A] border-b border-[#243659]">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2">
+              <div className="w-8 h-8 rounded-lg flex items-center justify-center font-bold text-white text-xs" style={{ backgroundColor: BRAND_COLOR }}>
+                PMT
+              </div>
+              <div>
+                <div className="flex items-center gap-1.5">
+                  <span className="text-white font-extrabold text-lg tracking-tight">{COMPANY.name}</span>
+                  <span className="font-semibold text-lg" style={{ color: BRAND_COLOR }}>Plastic Molding</span>
+                </div>
+                <p className="text-slate-400 text-xs leading-none hidden sm:block">
+                  {COMPANY.tagline}
+                </p>
+              </div>
             </div>
           </div>
-          <div className="flex items-center gap-2 text-xs text-slate-500">
-            <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
-            <span>Template-based · No API</span>
+          <div className="flex items-center gap-3">
+            <div className="rounded-lg px-3 py-1.5" style={{ backgroundColor: `${BRAND_COLOR}18`, border: `1px solid ${BRAND_COLOR}4D` }}>
+              <span className="text-xs font-semibold tracking-wide uppercase" style={{ color: BRAND_COLOR }}>Content Engine</span>
+            </div>
           </div>
         </div>
       </header>
 
-      {/* Platform Selector */}
-      <div className="flex-shrink-0 px-6 py-3 border-b border-pmt-steel/20">
-        <PlatformSelector active={platform} onChange={handlePlatformChange} onConvert={handleConvert} />
-      </div>
+      {/* Main */}
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-5">
+        <PlatformSelector selected={platform} onChange={handlePlatformChange} />
 
-      {/* Main layout */}
-      <div className="flex flex-1 overflow-hidden">
-        {/* Input Panel */}
-        <div className="w-80 flex-shrink-0 border-r border-pmt-steel/30 flex flex-col bg-pmt-charcoal/30 overflow-hidden">
-          <InputPanel
-            platform={platform}
-            inputs={inputs}
-            onChange={setInputs}
-            onGenerate={handleGenerate}
-          />
+        <div className="grid grid-cols-1 lg:grid-cols-5 gap-5 items-start">
+          <div className="lg:col-span-2">
+            <InputPanel
+              platform={platform}
+              inputs={inputs[platform]}
+              onChange={handleInputChange}
+              onGenerate={handleGenerate}
+              isGenerating={isGenerating}
+              problemLabels={PROBLEM_LABELS}
+              targetAudiences={TARGET_AUDIENCES}
+              contentAngles={CONTENT_ANGLES}
+              objectives={OBJECTIVES}
+            />
+          </div>
+          <div className="lg:col-span-3">
+            <OutputPanel
+              output={output}
+              platform={platform}
+              onRegenerate={handleRegenerate}
+              onTransform={handleTransform}
+              isGenerating={isGenerating}
+            />
+          </div>
         </div>
+      </main>
 
-        {/* Output Panel */}
-        <div className="flex-1 overflow-hidden flex flex-col">
-          <OutputPanel
-            output={output}
-            inputs={inputs}
-            onRegenerate={handleRegenerate}
-            onConvert={handleConvert}
-          />
+      <footer className="border-t border-slate-200 mt-8 py-4">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <p className="text-xs text-slate-400 text-center">
+            {COMPANY.fullName} — Content Engine — {COMPANY.website} — All content generated from structured templates. No API required.
+          </p>
         </div>
-      </div>
+      </footer>
     </div>
   )
 }
