@@ -9,6 +9,7 @@ const SeawindApp       = lazy(() => import('./companies/seawind/App'))
 const SpeccoatApp      = lazy(() => import('./companies/speccoat/App'))
 const PremierPkgApp    = lazy(() => import('./companies/premier-packaging/App'))
 const PremierLogiApp   = lazy(() => import('./companies/premier-logitech/App'))
+const SummitApp        = lazy(() => import('./companies/summit/App'))
 
 const COMPANIES = [
   {
@@ -82,6 +83,14 @@ const COMPANIES = [
     color: '#7C3AED',
     abbr: 'PL',
     App: PremierLogiApp,
+  },
+  {
+    id: 'summit',
+    label: 'Summit Seed',
+    subtitle: 'Seed Coatings',
+    color: '#4A7C59',
+    abbr: 'SS',
+    App: SummitApp,
   },
 ] as const
 
