@@ -10,6 +10,7 @@ const SpeccoatApp      = lazy(() => import('./companies/speccoat/App'))
 const PremierPkgApp    = lazy(() => import('./companies/premier-packaging/App'))
 const PremierLogiApp   = lazy(() => import('./companies/premier-logitech/App'))
 const SummitApp        = lazy(() => import('./companies/summit/App'))
+const FullCircleApp    = lazy(() => import('./companies/fullcircle/App'))
 
 const COMPANIES = [
   {
@@ -91,6 +92,14 @@ const COMPANIES = [
     color: '#4A7C59',
     abbr: 'SS',
     App: SummitApp,
+  },
+  {
+    id: 'fullcircle',
+    label: 'Full Circle',
+    subtitle: 'Electronics ITAD',
+    color: '#0891B2',
+    abbr: 'FC',
+    App: FullCircleApp,
   },
 ] as const
 
